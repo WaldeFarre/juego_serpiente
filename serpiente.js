@@ -1,4 +1,4 @@
-// 1. Capturamos el canvas y su contexto de dibujo
+  // 1. Capturamos el canvas y su contexto de dibujo
     const canvas = document.getElementById("canvasJuego");
     const ctx = canvas.getContext("2d");
 
@@ -14,6 +14,8 @@
     let direccionActual = "derecha";
     let intervaloSerpiente = null;
     let puntaje = 0;
+    let velocidad = 200;
+    let juegoTerminado = false;
 
     // Primera pintura del juego al cargar la página
     dibujarTodo();
@@ -84,6 +86,20 @@
       pintarSerpiente();
     }
 
+    function mostrarGameOver() {
+      ctx.fillStyle = "rgba(13, 5, 24, 0.75)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#f43f5e";
+      ctx.font = "bold 60px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
+
+      ctx.fillStyle = "#facc15";
+      ctx.font = "bold 26px Arial";
+      ctx.fillText("Puntaje: " + puntaje, canvas.width / 2, canvas.height / 2 + 40);
+    }
+
     // =========================
     // MOVIMIENTO
     // =========================
@@ -117,6 +133,18 @@
     }
 
     function cambiarDireccion(direccion) {
+      if (direccion === "derecha" && direccionActual === "izquierda") {
+        return;
+      }
+      if (direccion === "izquierda" && direccionActual === "derecha") {
+        return;
+      }
+      if (direccion === "arriba" && direccionActual === "abajo") {
+        return;
+      }
+      if (direccion === "abajo" && direccionActual === "arriba") {
+        return;
+      }
       direccionActual = direccion;
     }
 
@@ -151,6 +179,24 @@
     }
 
     // =========================
+    // GAME OVER
+    // =========================
+
+    function chocaBorde() {
+      let cabeza = serpiente[0];
+      let lineasVerticales = canvas.width / TAMANIO_CELDA;
+      let lineasHorizontales = canvas.height / TAMANIO_CELDA;
+
+      if (cabeza.x < 0 || cabeza.x >= lineasVerticales) {
+        return true;
+      }
+      if (cabeza.y < 0 || cabeza.y >= lineasHorizontales) {
+        return true;
+      }
+      return false;
+    }
+
+    // =========================
     // JUEGO AUTOMÁTICO
     // =========================
 
@@ -165,6 +211,14 @@
         moverAbajo();
       }
 
+      if (chocaBorde()) {
+        juegoTerminado = true;
+        clearInterval(intervaloSerpiente);
+        document.getElementById("estado").innerHTML = "Game Over";
+        mostrarGameOver();
+        return;
+      }
+
       if (atrapaComida()) {
         puntaje = puntaje + 1;
         document.getElementById("puntaje").innerHTML = puntaje;
@@ -176,8 +230,11 @@
     }
 
     function iniciarJuego() {
+      if (juegoTerminado) {
+        return;
+      }
       clearInterval(intervaloSerpiente);
-      intervaloSerpiente = setInterval(moverSerpiente, 200);
+      intervaloSerpiente = setInterval(moverSerpiente, velocidad);
       document.getElementById("estado").innerHTML = "Jugando";
     }
 
@@ -195,6 +252,7 @@
       ];
       direccionActual = "derecha";
       puntaje = 0;
+      juegoTerminado = false;
       document.getElementById("puntaje").innerHTML = puntaje;
       document.getElementById("estado").innerHTML = "Listo";
       pintarComida();
