@@ -4,6 +4,12 @@
 
     const TAMANIO_CELDA = 25;
 
+    const serpiente = [
+      {x: 8, y: 5},
+      {x: 7, y: 5},
+      {x: 6, y: 5}
+    ];
+
     // Primera pintura del juego al cargar la página
     dibujarTodo();
 
@@ -32,7 +38,39 @@
       ctx.stroke();
     }
 
+    function pintarParte(lineaX, lineaY) {
+      let x = lineaX * TAMANIO_CELDA;
+      let y = lineaY * TAMANIO_CELDA;
+
+      ctx.fillStyle = "#f43f5e";
+      ctx.fillRect(x, y, TAMANIO_CELDA, TAMANIO_CELDA);
+
+      ctx.strokeStyle = "#170a2b";
+      ctx.strokeRect(x, y, TAMANIO_CELDA, TAMANIO_CELDA);
+    }
+
+    function pintarSerpiente() {
+      let parte;
+      for (let i = 0; i < serpiente.length; i++) {
+        parte = serpiente[i];
+
+        if (i === 0) {
+          ctx.fillStyle = "#facc15";
+        } else {
+          ctx.fillStyle = "#f43f5e";
+        }
+
+        let x = parte.x * TAMANIO_CELDA;
+        let y = parte.y * TAMANIO_CELDA;
+        ctx.fillRect(x, y, TAMANIO_CELDA, TAMANIO_CELDA);
+
+        ctx.strokeStyle = "#170a2b";
+        ctx.strokeRect(x, y, TAMANIO_CELDA, TAMANIO_CELDA);
+      }
+    }
+
     function dibujarTodo() {
       limpiarCanvas();
       dibujarTablero();
+      pintarSerpiente();
     }
